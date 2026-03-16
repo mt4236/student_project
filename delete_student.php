@@ -1,12 +1,30 @@
 <?php
-include "db.php";
+include 'db.php';
 
-$id=$_GET['id'];
+if(isset($_GET['id'])){
 
-$sql="DELETE FROM students WHERE id=$id";
+    $id = $_GET['id'];
 
-mysqli_query($conn,$sql);
+    // Get photo path from database
+    $query = "SELECT photo FROM students WHERE id = $id";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($result);
 
+    if($row){
+        $photo = $row['photo'];
+
+        // Delete photo file from uploads folder
+        if(file_exists($photo)){
+            unlink($photo);
+        }
+
+        // Delete student record from database
+        $delete = "DELETE FROM students WHERE id = $id";
+        mysqli_query($conn, $delete);
+    }
+}
+
+// Go back to dashboard
 header("Location: dashboard.php");
-
+exit();
 ?>
